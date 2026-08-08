@@ -6,43 +6,55 @@
 uint8_t oled_screen[OLED_BUFSIZE]; // 1024 байта
 
 const uint8_t *font_table[] = {
-    digit_font_5x7[0], digit_font_5x7[1], digit_font_5x7[2],
-    digit_font_5x7[3], digit_font_5x7[4], digit_font_5x7[5],
-    digit_font_5x7[6], digit_font_5x7[7], digit_font_5x7[8],
-    digit_font_5x7[9],
-    colon_5x7,          // 10
-    minus_5x7,          // 11
-    dot_5x7,            // 12
-    degree_5x7,         // 13
-    letter_C_5x7,       // 14
-		percent_5x7,				// 15
-		exclamation_5x7,		// 16
-		letter_m_5x7,				// 17
-		letter_p_5x7,				// 18
-		letter_T_cyr_5x7,		// 19
-		letter_V_cap_5x7,		// 20
-		letter_E_cap_5x7,		// 21
-		letter_M_cap_5x7,		// 22
-		letter_Ya_cap_5x7,	// 23
-		letter_ru_P_cap_5x7,// 24
-		letter_A_cap_5x7,		// 25
-		hyphen_5x7,					// 26
-		letter_L_cap_5x7,		// 27
-		letter_Zh_cap_5x7,	// 28
-		letter_N_cap_5x7,		// 29
-		letter_O_cap_5x7,		// 30
-		letter_SoftSign_5x7,// 31
-		letter_D_cap_5x7,		// 32
-		letter_I_cap_5x7,		// 33
-		letter_U_cap_5x7,		// 34
-		space_5x7,					// 35
-		slash_5x7,					// 36
-		letter_H_5x7				// 37
+    // ЦИФРЫ 0..9
+    digit_font_5x7[0], // 0
+    digit_font_5x7[1], // 1
+    digit_font_5x7[2], // 2
+    digit_font_5x7[3], // 3
+    digit_font_5x7[4], // 4
+    digit_font_5x7[5], // 5
+    digit_font_5x7[6], // 6
+    digit_font_5x7[7], // 7
+    digit_font_5x7[8], // 8
+    digit_font_5x7[9], // 9
+
+    // СИМВОЛЫ
+    space_5x7,          // 10  пробел
+    exclamation_5x7,    // 11  !
+    percent_5x7,        // 12  %
+    slash_5x7,          // 13  /
+    colon_5x7,          // 14  :
+    hyphen_5x7,         // 15  - (дефис)
+    minus_5x7,          // 16  ? (минус, может совпадать с дефисом)
+    dot_5x7,            // 17  .
+    degree_5x7,         // 18  °
+
+    // АНГЛИЙСКИЕ БУКВЫ (заглавные A–V, затем строчные)
+    letter_A_cap_5x7,   // 19  A
+    letter_C_5x7,       // 20  C
+    letter_D_cap_5x7,   // 21  D
+    letter_E_cap_5x7,   // 22  E
+    letter_H_5x7,       // 23  H
+    letter_ru_I_cap_5x7,   // 24  И
+    letter_K_5x7,       // 25  K
+    letter_L_cap_5x7,   // 26  L
+    letter_M_cap_5x7,   // 27  M
+    letter_N_cap_5x7,   // 28  N
+    letter_O_cap_5x7,   // 29  O
+    letter_m_5x7,       // 30  m (строчная)
+    letter_P_5x7,       // 31  p
+
+    // РУССКИЕ БУКВЫ (алфавитный порядок)
+		letter_V_cap_5x7,   		// 32  В
+    letter_ru_Zh_cap_5x7,   // 33  Ж
+    letter_ru_P_cap_5x7,    // 34  П
+    letter_ru_T_5x7,        // 35  Т
+    letter_ru_U_cap_5x7,    // 36  У
+		letter_ru_F_cap_5x7, 		// 37  Ф
+		letter_ru_Ch_cap_5x7,		// 38  Ч
+    letter_ru_SoftSign_5x7, // 39  Ь
+    letter_ru_Ya_cap_5x7    // 40  Я
 };
-
-
-
-
 
 const uint8_t colon_5x7[COL_PX] = {0x00, 0x36, 0x36, 0x00, 0x00};// Двоеточие
 const uint8_t minus_5x7[COL_PX] = {0x00, 0x08, 0x08, 0x08, 0x00};// Минус
@@ -55,49 +67,42 @@ const uint8_t exclamation_5x7[COL_PX] = {0x00, 0x5F, 0x00, 0x00, 0x00}; // !
 
 //const uint8_t letter_r_5x7[5]   = {0x7F, 0x09, 0x19, 0x29, 0x46}; // р
 const uint8_t letter_V_cap_5x7[5] = {0x7F, 0x49, 0x49, 0x49, 0x36};// B
-const uint8_t letter_p_5x7[5] = {0x7F, 0x09, 0x09, 0x09, 0x06}; // p
+const uint8_t letter_P_5x7[5] = {0x7F, 0x09, 0x09, 0x09, 0x06}; // p
 const uint8_t letter_E_cap_5x7[5] = {0x7F, 0x49, 0x49, 0x49, 0x41}; // E
 const uint8_t letter_m_5x7[5]   = {0x7F, 0x02, 0x0C, 0x02, 0x7F}; // м
 const uint8_t letter_M_cap_5x7[5] = {0x7F, 0x02, 0x04, 0x02, 0x7F}; // M
-const uint8_t letter_Ya_cap_5x7[5] = {0x46, 0x29, 0x19, 0x09, 0x7F}; //Я
-// Пробел (пустые 5 столбцов)
-const uint8_t space_5x7[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
+const uint8_t letter_ru_Ya_cap_5x7[5] = {0x46, 0x29, 0x19, 0x09, 0x7F}; //Я
+const uint8_t space_5x7[5] = {0x00, 0x00, 0x00, 0x00, 0x00};// Пробел (пустые 5 столбцов)
 
-const uint8_t letter_T_cyr_5x7[5] = {0x01, 0x01, 0x7F, 0x01, 0x01}; //T
+const uint8_t letter_ru_T_5x7[5] = {0x01, 0x01, 0x7F, 0x01, 0x01}; //T
 const uint8_t letter_ru_P_cap_5x7[5] = {0x7F, 0x01, 0x01, 0x01, 0x7F}; //П
 const uint8_t letter_A_cap_5x7[5] = {0x7E, 0x09, 0x09, 0x09, 0x7E};
 const uint8_t hyphen_5x7[5] = {0x00, 0x08, 0x08, 0x08, 0x00}; // дефис
 const uint8_t letter_L_cap_5x7[5] = {0x40, 0x3F, 0x01, 0x01, 0x7F};
-const uint8_t letter_Zh_cap_5x7[5] = {0x63, 0x14, 0x7F, 0x14, 0x63};// Ж
+const uint8_t letter_ru_Zh_cap_5x7[5] = {0x63, 0x14, 0x7F, 0x14, 0x63};// Ж
 const uint8_t letter_N_cap_5x7[5] = {0x7F, 0x08, 0x08, 0x08, 0x7F};// Н 
 const uint8_t letter_O_cap_5x7[5] = {0x3E, 0x41, 0x41, 0x41, 0x3E};// О
-const uint8_t letter_SoftSign_5x7[5] = {0x7F, 0x48, 0x48, 0x48, 0x30};// Ь
+const uint8_t letter_ru_SoftSign_5x7[5] = {0x7F, 0x48, 0x48, 0x48, 0x30};// Ь
 const uint8_t letter_D_cap_5x7[5] = {0x60, 0x3E, 0x21, 0x3F, 0x60};// Д
-const uint8_t letter_I_cap_5x7[5] = {0x7F, 0x20, 0x10, 0x08, 0x7F};// И 
-const uint8_t letter_U_cap_5x7[5] = {0x03, 0x44, 0x48, 0x48, 0x3F};//У
+const uint8_t letter_ru_I_cap_5x7[5] = {0x7F, 0x20, 0x10, 0x08, 0x7F};// И 
+const uint8_t letter_ru_U_cap_5x7[5] = {0x03, 0x44, 0x48, 0x48, 0x3F};//У
 const uint8_t slash_5x7[5] = {0x20, 0x10, 0x08, 0x04, 0x02};// /
 const uint8_t letter_H_5x7[5] = {0x7F, 0x08, 0x08, 0x08, 0x7F};// H
+const uint8_t letter_K_5x7[5] = {0x7F,0x08,0x14,0x22,0x41};// K
+//const uint8_t letter_ru_Shche_cap_5x7[5] = {0x7F, 0x00, 0x7F, 0x0E, 0x10};//{0x7F, 0x10, 0x10, 0x10, 0x7F};//{0x7F, 0x00, 0x7F, 0x7E, 0x01}; // Щ
+const uint8_t letter_ru_F_cap_5x7[5] = {0x1C, 0x22, 0x7F, 0x22, 0x1C};// Ф
+const uint8_t letter_ru_Ch_cap_5x7[5] = {0x07,0x08,0x08,0x08,0x7F};// Ч
 
-// Индексы: В(20), Р(18), Е(21), M(22), Я(23), :(10)
-const uint8_t vremya_indices[] = {20, 18, 21, 22, 23, 10};
-// Индексы: Т(19), Е(21), M(22), П(24), -(26), Р(18), А(25), :(10)
-const uint8_t temperature_indices[] = {19, 21, 22, 24, 26, 18, 25, 10};
-// Индексы: Т(19), Е(21), M(22), П(24), Е(21), Р(18), А(25), Т(19), У(34), Р(18), А(25):(10)
-const uint8_t temperature_full_indices[] = {19, 21, 22, 24, 21, 18, 25, 19, 34, 18, 25, 10};
-// Индексы: В(20), Л(27), А(25), Ж(28), Н(29), О(30), С(14), Т(19), Ь(31), :(10)
-const uint8_t humidity_indices[] = {20, 27, 25, 28, 29, 30, 14, 19, 31, 10};
-// Индексы: Д(32), А(25), В(20), Л(27), Е(21), Н(29), И(33), Е(21), :(10)
-const uint8_t pressure_indices[] = {32, 25, 20, 27, 21, 29, 33, 21, 10};
-// Индексы: В(20), В(20), Е(21), Д(32), И(33), Т(19), Е(21) 
-const uint8_t init_message_line0[] = {20, 20, 21, 32, 33, 19, 21, 35};
-// Д(32), А(25), Т(19), У(34), пробел(35), В(20), Р(18), Е(21), M(22), Я(23)
-//const uint8_t init_message_line1[] = {32, 25, 19, 34, 36, 20, 18, 21, 22, 23, 10};
-const uint8_t init_message_line1[] = {20, 18, 21, 22, 23};
-// Д(32), А(25), Т(19), У(34),
-const uint8_t init_message_line2[] = {32, 25, 19, 34};
 
-const uint8_t sent_indices[] = {24, 21, 18, 21, 32, 25, 37, 30};
-const uint8_t delete_indices[] = {34, 32, 25, 27, 21, 37, 30};
+// Индексы: Т(35), Е(22), M(27), П(34), Е(22), Р(31), А(19), Т(35), У(36), Р(31), А(19)
+const uint8_t temperature_full_indices[] = {35, 22, 27, 34, 22, 31, 19, 35, 36, 31, 19};
+//У(36) С(20) Т(35) А(19) В(32) K(25) А(19) :(14)
+const uint8_t ustavka_indices[] = {36, 20, 35, 19, 32, 25, 19, 14};
+
+//Фактическое значение
+//Ф(37) А(19) K(25) Т(35) И(24) Ч(38) Е(22) С() К(25) О(29) Е(22) :14 
+const uint8_t current_value_indices[] = {37, 19, 25, 35, 24, 38, 22, 20, 25, 29, 22, 14};
+
 //Битовые маски символов (5x7)
 // Цифры 0..9
 const uint8_t digit_font_5x7[10][5] = {
@@ -393,15 +398,15 @@ void OLED_PrintTemperature(uint8_t x, uint8_t y, float temperature, uint8_t scal
     }
 
     // Десятая доля (одна цифра после запятой)
-    indices[cnt++] = 12; // точка
+    indices[cnt++] = 17; // точка
     int frac = (int)(temperature * 10) % 10; // округление до ближайшего целого уже в temperature
     // Более точное округление:
     // int frac = (int)((temperature - whole) * 10 + 0.5);
     indices[cnt++] = frac; // цифра 0..9
 
     // Градус и C
-    indices[cnt++] = 13;   // °
-    indices[cnt++] = 14;   // C
+    indices[cnt++] = 18;   // °
+    indices[cnt++] = 20;   // C
 
     // Вывод строки
     OLED_PrintScaledSymbols(x, y, font_table, indices, cnt, scale);
@@ -441,7 +446,7 @@ void OLED_PrintHumidity(uint8_t x, uint8_t y, float humidity, uint8_t scale, con
     }
 
     // Десятая доля
-    indices[cnt++] = 12;  // точка (.)
+    indices[cnt++] = 17;  // точка (.)
     int frac = (int)((humidity - whole) * 10 + 0.5f);  // округление
     if (frac > 9) frac = 9;
     indices[cnt++] = frac;  // 0..9
@@ -496,127 +501,4 @@ void OLED_PrintPressure(/*uint8_t x, */uint8_t y, uint32_t pressure, uint8_t sca
     if (y_unit > OLED_HEIGHT - 7*unit_scale) y_unit = OLED_HEIGHT - 7*unit_scale;
 
     OLED_PrintScaledSymbols(x_unit, y_unit, font_table, unit_idx, unit_len, unit_scale);
-}
-
-void Display_flash_data(char *flash_buff, const uint8_t current_page_number, const uint8_t display_number)
-{
-		const uint8_t page_offset = 20;
-		uint8_t line1_size = 20;//может измениться
-		uint8_t line2_size = 20;////может измениться
-    static uint8_t oled_line1[20];
-		static uint8_t oled_line2[20];
-		
-		if ((uint8_t)flash_buff[0] == 0xFF && (uint8_t)flash_buff[1] == 0xFF)
-		{
-				return;
-		}
-		uint8_t index_count = 0;//индекс чтобы понять какой символ отображаем в строке oled дисплея
-		uint8_t init_offset = 4;//сдвиг чтобы показать номер записи
-		if (current_page_number > 99)
-		{
-				oled_line1[index_count++] = current_page_number / 100 % 10;
-				oled_line1[index_count++] = current_page_number / 10 % 10;
-				oled_line1[index_count++] = current_page_number % 10;
-		}
-		else if (current_page_number > 9)
-		{
-				oled_line1[index_count++] = 0;
-				oled_line1[index_count++] = current_page_number / 10 % 10;
-				oled_line1[index_count++] = current_page_number % 10;
-		}
-		else
-		{
-				oled_line1[index_count++] = 0;
-				oled_line1[index_count++] = 0;
-				oled_line1[index_count++] = current_page_number;
-		}
-		oled_line1[index_count++] = 12;
-
-
-		int src_index = 0;//индекс чтобы понять какой символ берем из массива с данными из flash 
-		if (flash_buff[src_index] == 'T' || flash_buff[src_index] == 't')
-		{
-				memcpy(oled_line1 + init_offset, temperature_full_indices, 11);
-				index_count += 11;
-				//oled_line1[index_count++] = 19;
-		}
-		else if (flash_buff[src_index] == 'P' || flash_buff[src_index] == 'p')
-		{		
-				memcpy(oled_line1 + init_offset, pressure_indices, 8);
-				index_count += 8;
-				//oled_line1[index_count++] = 18;
-		}
-		else if (flash_buff[src_index] == 'H' || flash_buff[src_index] == 'h')
-		{
-				memcpy(oled_line1 + init_offset, humidity_indices, 9);
-				index_count += 9;
-				//oled_line1[index_count++] = 37;
-		}
-		else
-				return;
-
-		
-		oled_line1[index_count++] = 35;
-		src_index += 2;
-		
-				for (; src_index < line1_size; src_index++)
-				{
-						if (flash_buff[src_index] == '[')
-						{
-								line1_size = index_count;
-								break;//continue;
-						}
-						else if (flash_buff[src_index] == ' ')
-								oled_line1[index_count++] = 35;
-						else if (flash_buff[src_index] == ']')
-						{
-								line1_size = index_count;
-								break;
-						}
-						else if ((uint8_t)flash_buff[src_index] == 0xFF)
-						{
-								line1_size = index_count;
-								break;
-						}
-						else if (flash_buff[src_index] == '\n')
-						{
-								continue;
-						}
-						else if (flash_buff[src_index] == ':')
-								oled_line1[index_count++] = 10;
-						else if (flash_buff[src_index] == '-')
-								oled_line1[index_count++] = 11;
-						else 
-								oled_line1[index_count++] = flash_buff[src_index] - '0';
-				}
-				int j = 0;
-				for (; j < line2_size; src_index++)
-				{
-						if (flash_buff[src_index] == '[')
-								continue;
-						else if (flash_buff[src_index] == ' ')
-								oled_line2[j++] = 35;
-						else if (flash_buff[src_index] == ']')
-						{
-								line2_size = j;
-								break;
-						}
-						else if ((uint8_t)flash_buff[src_index] == 0xFF)
-						{
-								line2_size = j;
-								break;
-						}
-						else if (flash_buff[src_index] == '\n')
-								oled_line2[j++] = 35;
-						else if (flash_buff[src_index] == ':')
-								oled_line2[j++] = 10;
-						else if (flash_buff[src_index] == '-')
-								oled_line2[j++] = 11;
-						else
-								oled_line2[j++] = flash_buff[src_index] - '0';
-				}
-
-    // Отображаем содержимое Flash-памяти
-    OLED_PrintScaledSymbols(0, ((display_number - 1) * page_offset), font_table, oled_line1, line1_size, 1);
-		OLED_PrintScaledSymbols(0, (((display_number - 1) * page_offset) + 10), font_table, oled_line2, line2_size, 1);
 }

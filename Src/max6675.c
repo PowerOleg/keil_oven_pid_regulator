@@ -7,7 +7,7 @@
 
 static int Max6675_read_raw(void)
 {
-    PID_CS_LOW(); // CS low
+    PID_CS_LOW();
     Delay_us(10);
 
     SPI_I2S_SendData(SPI1, 0x00);
@@ -18,7 +18,7 @@ static int Max6675_read_raw(void)
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);
     uint8_t b2 = SPI_I2S_ReceiveData(SPI1);
 
-    PID_CS_HIGH(); // CS high
+    PID_CS_HIGH();
     Delay_us(10);
 
     return ((uint16_t)b1 << 8) | (uint16_t)b2;
@@ -26,14 +26,9 @@ static int Max6675_read_raw(void)
 
 float Max6675_get_temperature_c(void)
 {
-    uint16_t raw = Max6675_read_raw();
-	
-		uint16_t raw_temp = raw;
+    uint16_t raw_temp = Max6675_read_raw();
 		raw_temp = raw_temp >> 3;
-	
-		float temperature = (float)raw_temp * 0.25f;
-		raw_temp = raw_temp * 25;
-		return temperature;
+		return (float)raw_temp * 0.25f;
 /*	
 		if (raw & 0x0004)
 		{

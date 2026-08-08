@@ -15,11 +15,12 @@ volatile uint8_t previous_action = 0;
 
 volatile uint8_t pressed_key = 0;
 char display_buffer[DISPLAY_LINE_SIZE] = {0};
-char buffer_uart[UART_BUFFER_SIZE] = {0};// Буфер для отправки лога на ПК
+char buffer_uart[UART_BUFFER_SIZE] = {0};// Буфер для отправки данных на ПК
 
 Led led_a8;
 Led led_c13;
 
+float temperature_c_previous = 0.0f;
 
 int main(void)
 {
@@ -55,15 +56,26 @@ int main(void)
 		Led_toggle(&led_c13);
 		Led_toggle(&led_a8);
 
-
-
 		while(1)
 		{
-				Delay_us(1000000);
-float temperature_c = Max6675_get_temperature_c();
+				Delay_us(20000);
+
 				if (tim3_1sec_flag)
 				{
 						Led_toggle(&led_c13);
+						float temperature_c = Max6675_get_temperature_c();
+						if (temperature_c != temperature_c_previous)
+						{
+								temperature_c_previous = temperature_c;
+								OLED_ClearBuffer();
+								OLED_PrintScaledSymbols(25, 8, font_table, temperature_full_indices, 11, 1);
+								OLED_PrintScaledSymbols(0, 20, font_table, ustavka_indices, 8, 1);
+								OLED_PrintTemperature(0, 30, temperature_c, 1, font_table);
+								OLED_PrintScaledSymbols(0, 40, font_table, current_value_indices, 12, 1);
+								OLED_PrintTemperature(0, 50, temperature_c, 1, font_table);
+								OLED_UpdateScreen();
+						}
+					
 						tim3_1sec_flag = 0;
 				}
 					
@@ -71,38 +83,24 @@ float temperature_c = Max6675_get_temperature_c();
 				if (pressed_key != NO_KEY)
 						cur_action = pressed_key;
 
+				
 				switch (cur_action)
 				{
-						case TIME:
+						case LEFT:
 
 								break;
-						case TEMPERATURE:
-								OLED_ClearBuffer();
-								OLED_PrintScaledSymbols(10, 0, font_table, temperature_indices, 8, 2);
-//								OLED_PrintTemperature(10, 30, bmp280_result.temperature_c, 3, font_table);
-								OLED_UpdateScreen();
-								break;
-						case HUMIDITY:
+						case RIGHT:
 
 								break;
-						case PRESSURE:
+						case START:
 
 								break;
-						case MIN_MAX_LOG:
-
-								break;
-						case PAGE_UP:
-
-								break;
-						case PAGE_DOWN:
-
-								break;
-						case DELETE_LOG:
+						case STOP:
 
 								break;
 						case SEND_DATA_TO_PC:
 						{
-								uint16_t buffer_size = 0;//Get_uart_buffer(buffer_uart);
+								/*uint16_t buffer_size = 0;//Get_uart_buffer(buffer_uart);
 								if (buffer_size > 0)
 								{
 										Uart2_send_string(buffer_uart, buffer_size);
@@ -112,14 +110,10 @@ float temperature_c = Max6675_get_temperature_c();
 										OLED_UpdateScreen();
 										Delay_us(1000000);
 								}
-								cur_action = previous_action;
+								cur_action = previous_action;*/
 								break;
 						}
-						case SET_TIME:
-						{
 
-								break;
-						}
 				}
 				previous_action = cur_action;
 		}

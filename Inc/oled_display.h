@@ -31,43 +31,36 @@ extern const uint8_t percent_5x7[COL_PX];
 extern const uint8_t percent_15x21[15];
 extern const uint8_t exclamation_5x7[COL_PX];
 
-// Буквы для слова "Время" (приближенные к кириллице)
 extern const uint8_t letter_V_cap_5x7[5];
-extern const uint8_t letter_p_5x7[5];
+extern const uint8_t letter_P_5x7[5];
 extern const uint8_t letter_E_cap_5x7[5];
 extern const uint8_t letter_m_5x7[5];
 extern const uint8_t letter_M_cap_5x7[5];
-extern const uint8_t letter_Ya_cap_5x7[5];
+extern const uint8_t letter_ru_Ya_cap_5x7[5];
 
-// Пробел (пустые 5 столбцов)
 extern const uint8_t space_5x7[COL_PX];
-
-// Буква 'т' (строчная, как T)
-extern const uint8_t letter_T_cyr_5x7[COL_PX];
+extern const uint8_t letter_ru_T_5x7[COL_PX];
 extern const uint8_t letter_ru_P_cap_5x7[COL_PX];
 extern const uint8_t letter_A_cap_5x7[COL_PX];
 extern const uint8_t hyphen_5x7[COL_PX];
 
 extern const uint8_t letter_L_cap_5x7[COL_PX];
-extern const uint8_t letter_Zh_cap_5x7[COL_PX];
+extern const uint8_t letter_ru_Zh_cap_5x7[COL_PX];
 extern const uint8_t letter_N_cap_5x7[COL_PX];
 extern const uint8_t letter_O_cap_5x7[COL_PX];
-extern const uint8_t letter_SoftSign_5x7[COL_PX];
+extern const uint8_t letter_ru_SoftSign_5x7[COL_PX];
 extern const uint8_t letter_D_cap_5x7[5];
-extern const uint8_t letter_I_cap_5x7[5];
-extern const uint8_t letter_U_cap_5x7[5];
+extern const uint8_t letter_ru_I_cap_5x7[5];
+extern const uint8_t letter_K_5x7[5];
+extern const uint8_t letter_ru_U_cap_5x7[5];
+extern const uint8_t letter_ru_F_cap_5x7[5];
+extern const uint8_t letter_ru_Ch_cap_5x7[5];
 extern const uint8_t slash_5x7[5];
 extern const uint8_t letter_H_5x7[5];
-	
-extern const uint8_t vremya_indices[];
-extern const uint8_t temperature_indices[];
-extern const uint8_t humidity_indices[];
-extern const uint8_t pressure_indices[];
-extern const uint8_t init_message_line0[];
-extern const uint8_t init_message_line1[];
-extern const uint8_t init_message_line2[];
-extern const uint8_t sent_indices[];
-extern const uint8_t delete_indices[];
+
+extern const uint8_t temperature_full_indices[];
+extern const uint8_t ustavka_indices[];
+extern const uint8_t current_value_indices[];
 
 void Oled_gpio_init(void);
 void Oled_spi_init(void);
@@ -87,7 +80,5 @@ void OLED_PrintHumidity(uint8_t x, uint8_t y, float humidity, uint8_t scale, con
 void OLED_DrawPercent15x21(uint8_t x, uint8_t y);
 void OLED_DrawPercent15x21Buf(uint8_t x_px, uint8_t y_page);
 void OLED_PrintPressure(uint8_t y, uint32_t pressure, uint8_t scale, const uint8_t **font_table);
-
-void Display_flash_data(char *flash_buff, const uint8_t current_page_number, const uint8_t display_number);
 
 #endif
