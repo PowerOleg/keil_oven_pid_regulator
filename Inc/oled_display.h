@@ -49,7 +49,7 @@ extern const uint8_t letter_ru_Zh_cap_5x7[COL_PX];
 extern const uint8_t letter_N_cap_5x7[COL_PX];
 extern const uint8_t letter_O_cap_5x7[COL_PX];
 extern const uint8_t letter_ru_SoftSign_5x7[COL_PX];
-extern const uint8_t letter_D_cap_5x7[5];
+extern const uint8_t letter_ru_D_cap_5x7[5];
 extern const uint8_t letter_ru_I_cap_5x7[5];
 extern const uint8_t letter_K_5x7[5];
 extern const uint8_t letter_ru_U_cap_5x7[5];
@@ -63,6 +63,7 @@ extern const uint8_t temperature_full_indices[];
 extern const uint8_t ustavka_indices[];
 extern const uint8_t current_value_indices[];
 extern const uint8_t stop_indices[];
+extern const uint8_t start_indices[];
 	
 void Oled_gpio_init(void);
 void Oled_spi_init(void);

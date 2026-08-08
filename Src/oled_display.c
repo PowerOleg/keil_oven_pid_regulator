@@ -31,19 +31,19 @@ const uint8_t *font_table[] = {
     // АНГЛИЙСКИЕ БУКВЫ (заглавные A–V, затем строчные)
     letter_A_cap_5x7,   // 18  A
     letter_C_5x7,       // 19  C
-    letter_D_cap_5x7,   // 20  D
-    letter_E_cap_5x7,   // 21  E
-    letter_H_5x7,       // 22  H
-    letter_K_5x7,       // 23  K
-    letter_M_cap_5x7,   // 24  M
-    letter_N_cap_5x7,   // 25  N
-    letter_O_cap_5x7,   // 26  O
-    letter_m_5x7,       // 27  m (строчная)
-    letter_P_5x7,       // 28  p
+    letter_E_cap_5x7,   // 20  E
+    letter_H_5x7,       // 21  H
+    letter_K_5x7,       // 22  K
+    letter_M_cap_5x7,   // 23  M
+    letter_N_cap_5x7,   // 24  N
+    letter_O_cap_5x7,   // 25  O
+    letter_m_5x7,       // 26  m (строчная)
+    letter_P_5x7,       // 27  P
 
     // РУССКИЕ БУКВЫ (алфавитный порядок)
-		letter_ru_V_cap_5x7,   		// 29  В
-		letter_ru_G_cap_5x7,			// 30  Г
+		letter_ru_V_cap_5x7,   		// 28  В
+		letter_ru_G_cap_5x7,			// 29  Г
+		letter_ru_D_cap_5x7,   		// 30  Д
     letter_ru_Zh_cap_5x7,   	// 31  Ж
 		letter_ru_I_cap_5x7,			// 32  И
 		letter_ru_L_cap_5x7,   		// 33  Л
@@ -56,17 +56,17 @@ const uint8_t *font_table[] = {
     letter_ru_Ya_cap_5x7    	// 40  Я
 };
 
-// Индексы: Т(35), Е(21), M(24), П(34), Е(21), Р(28), А(18), Т(35), У(36), Р(28), А(18)
-const uint8_t temperature_full_indices[] = {35, 21, 24, 34, 21, 28, 18, 35, 36, 28, 18};
-//У(36) С(19) Т(35) А(18) В(29) K(23) А(18) :(14)
-const uint8_t ustavka_indices[] = {36, 19, 35, 18, 29, 23, 18, 14};
-
+// Индексы: Т(35), Е(20), M(23), П(34), Е(20), Р(27), А(18), Т(35), У(36), Р(27), А(18)
+const uint8_t temperature_full_indices[] = {35, 20, 23, 34, 20, 27, 18, 35, 36, 27, 18};
+//У(36) С(19) Т(35) А(18) В(28) K(22) А(18) :(14)
+const uint8_t ustavka_indices[] = {36, 19, 35, 18, 28, 22, 18, 14};
 //Фактическая температура
-//Ф(37) А(18) K(23) Т(36) И(32) Ч(38) Е(21) С(19) К(23) А(18) Я(40) :14 
-const uint8_t current_value_indices[] = {37, 18, 23, 35, 32, 38, 21, 19, 23, 18, 40, 14};
-//Н(22)	А(18)	Г(31) Р(28)	Е(21)	В(29)	ПРОБЕЛ(10)		О(26) С(19) Т(36) А(18) Н(22) О(26) В(29) Л(33) Е(21) Н(22)	!(11)
-const uint8_t stop_indices[] = {22, 18, 30, 28, 21, 29, 10, 26, 19, 35, 18, 22, 26, 29, 33, 21, 22, 11};
-
+//Ф(37) А(18) K(22) Т(35) И(32) Ч(38) Е(20) С(19) К(22) А(18) Я(40) :14 
+const uint8_t current_value_indices[] = {37, 18, 22, 35, 32, 38, 20, 19, 22, 18, 40, 14};
+//Н(21)	А(18)	Г(29) Р(27)	Е(20)	В(28)	ПРОБЕЛ(10)		О(25) С(19) Т(35) А(18) Н(21) О(25) В(28) Л(33) Е(20) Н(21)	!(11)
+const uint8_t stop_indices[] = {21, 18, 29, 27, 20, 28, 10, 25, 19, 35, 18, 21, 25, 28, 33, 20, 21, 11};
+//И(32) Д(20) Е(20) Т(35)	ПРОБЕЛ(10)	Н(21)	А(18)	Г(29) Р(27)	Е(20)	В(28)	!(11)
+const uint8_t start_indices[] = {32, 30, 20, 35, 10, 21, 18, 29, 27, 20, 28, 11};
 
 const uint8_t colon_5x7[COL_PX] = {0x00, 0x36, 0x36, 0x00, 0x00};// Двоеточие
 const uint8_t minus_5x7[COL_PX] = {0x00, 0x08, 0x08, 0x08, 0x00};// Минус
@@ -93,7 +93,7 @@ const uint8_t letter_ru_Zh_cap_5x7[5] = {0x63, 0x14, 0x7F, 0x14, 0x63};// Ж
 const uint8_t letter_N_cap_5x7[5] = {0x7F, 0x08, 0x08, 0x08, 0x7F};// Н 
 const uint8_t letter_O_cap_5x7[5] = {0x3E, 0x41, 0x41, 0x41, 0x3E};// О
 const uint8_t letter_ru_SoftSign_5x7[5] = {0x7F, 0x48, 0x48, 0x48, 0x30};// Ь
-const uint8_t letter_D_cap_5x7[5] = {0x60, 0x3E, 0x21, 0x3F, 0x60};// Д
+const uint8_t letter_ru_D_cap_5x7[5] = {0x60, 0x3E, 0x21, 0x3F, 0x60};// Д
 const uint8_t letter_ru_I_cap_5x7[5] = {0x7F, 0x20, 0x10, 0x08, 0x7F};// И 
 const uint8_t letter_ru_U_cap_5x7[5] = {0x03, 0x44, 0x48, 0x48, 0x3F};//У
 const uint8_t slash_5x7[5] = {0x20, 0x10, 0x08, 0x04, 0x02};// /
@@ -356,63 +356,7 @@ void OLED_fill_indices(uint8_t *indices, const uint8_t hours, const uint8_t minu
 		indices[3] = dozens_minutes;
 		indices[4] = minutes % 10;
 }
-/*
-void OLED_PrintTemperature(uint8_t x, uint8_t y, float temperature, uint8_t scale, const uint8_t **font_table)
-{
-		uint8_t indices[10];  // достаточно для -XX.X°C
-    uint8_t cnt = 0;
 
-    // Знак
-    if (temperature < 0)
-		{
-        indices[cnt++] = 15;  // минус
-        temperature = -temperature;//цифра отрицательная но чтобы работало, надо превратить в положительную
-    }
-
-    // Целая часть
-    int whole = (int)temperature;
-    uint8_t whole_digits[3];
-    uint8_t whole_len = 0;
-    if (whole == 0)
-		{
-        whole_digits[0] = 0;
-        whole_len = 1;
-    }
-		else
-		{
-        while (whole > 0)
-				{
-            whole_digits[whole_len++] = whole % 10;
-            whole /= 10;
-				}
-				
-        // Развернуть порядок (старший разряд первый)
-        for (uint8_t i = 0; i < whole_len / 2; i++)
-				{
-            uint8_t t = whole_digits[i];
-            whole_digits[i] = whole_digits[whole_len - 1 - i];
-            whole_digits[whole_len - 1 - i] = t;
-        }
-    }
-    for (uint8_t i = 0; i < whole_len; i++)
-		{
-        indices[cnt++] = whole_digits[i]; // цифра 0..9
-    }
-
-    // Десятая доля (одна цифра после запятой)
-    indices[cnt++] = 17; // точка
-    int frac = (int)(temperature * 10) % 10; // округление до ближайшего целого уже в temperature
-    // Более точное округление:
-    // int frac = (int)((temperature - whole) * 10 + 0.5);
-    indices[cnt++] = frac; // цифра 0..9
-
-    // Градус и C
-    indices[cnt++] = 17;   // °
-    indices[cnt++] = 19;   // C
-
-    // Вывод строки
-    OLED_PrintScaledSymbols(x, y, font_table, indices, cnt, scale);
-}*/
 void OLED_PrintTemperature(uint8_t x, uint8_t y, float temperature, uint8_t scale, const uint8_t **font_table)
 {
     uint8_t indices[12];  // -XXX.X°C Запас на все символы: знак + 3 цифры + точка + 1 цифра + ° + C
@@ -467,7 +411,7 @@ void OLED_PrintTemperature(uint8_t x, uint8_t y, float temperature, uint8_t scal
     }
 
     // Точка
-    indices[cnt++] = 17;  // точка
+    indices[cnt++] = 16;  // точка
 
     // Дробная часть: одна цифра после запятой с корректным округлением
     int frac = (int)(frac_part * 10 + 0.5f);  // +0.5 — это округление до ближайшего

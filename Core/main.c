@@ -23,7 +23,7 @@ Led led_c13;
 uint8_t is_stop = 1;
 uint8_t is_set_up_temperature = 1;
 
-uint8_t setpoint_array[5] = {0, 0, 0, 17, 0};//000.0
+uint8_t setpoint_array[5] = {0, 0, 0, 16, 0};//000.0
 float setpoint = 0.0f;
 float temperature_c_previous = 0.0f;
 
@@ -31,12 +31,12 @@ float temperature_c_previous = 0.0f;
 
 float Convert_setpoint_to_float(const uint8_t* setpoint_array)
 {
-		return (setpoint_array[0] * 100) + (setpoint_array[1] * 10) + setpoint_array[2] + (setpoint_array[4] * 0.1f);
+		return ((setpoint_array[0] * 100) + (setpoint_array[1] * 10) + setpoint_array[2] + (setpoint_array[4] * 0.1f));
 }
 	
 void Set_up_setpoint(const uint8_t key)
 {
-		if (key == 0x00 || key == START || key == STOP || key == SET_UP_TEMPERATURE || key == CONNECT_TO_PC)
+		if (key == 0x00 || key == 0xFF || key == START || key == STOP || key == SET_UP_TEMPERATURE || key == CONNECT_TO_PC)
 				return;
 		
 		
@@ -116,14 +116,13 @@ int main(void)
 								OLED_PrintTemperature(0, 40, temperature_c, 1, font_table);
 								if (is_stop)
 										OLED_PrintScaledSymbols(0, 54, font_table, stop_indices, 18, 1);
+								else
+										OLED_PrintScaledSymbols(0, 54, font_table, start_indices, 12, 1);
 								OLED_UpdateScreen();
 						}
 					
 						tim3_1sec_flag = 0;
 				}
-					
-
-
 				
 				switch (cur_action)
 				{
@@ -136,13 +135,9 @@ int main(void)
 						case START:
 								is_stop = 0;
 								is_set_up_temperature = 0;
-								OLED_ClearBuffer();
 								break;
 						case STOP:
 								is_stop = 1;
-//							OLED_ClearBuffer();
-								OLED_PrintScaledSymbols(0, 54, font_table, stop_indices, 18, 1);
-								OLED_UpdateScreen();
 								break;
 						case CONNECT_TO_PC:
 						{
@@ -159,11 +154,7 @@ int main(void)
 								cur_action = previous_action;*/
 								break;
 						}
-/*						case RIGHT:
-								if (symbol_index < 5)
-										symbol_index++;
-								cur_action = previous_action;
-								break;*/
+
 				}
 //				previous_action = cur_action;
 		}
