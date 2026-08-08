@@ -24,37 +24,49 @@ const uint8_t *font_table[] = {
     percent_5x7,        // 12  %
     slash_5x7,          // 13  /
     colon_5x7,          // 14  :
-    hyphen_5x7,         // 15  - (дефис)
-    minus_5x7,          // 16  ? (минус, может совпадать с дефисом)
-    dot_5x7,            // 17  .
-    degree_5x7,         // 18  °
+    minus_5x7,          // 15  - (минус)
+    dot_5x7,            // 16  .
+    degree_5x7,         // 17  °
 
     // АНГЛИЙСКИЕ БУКВЫ (заглавные A–V, затем строчные)
-    letter_A_cap_5x7,   // 19  A
-    letter_C_5x7,       // 20  C
-    letter_D_cap_5x7,   // 21  D
-    letter_E_cap_5x7,   // 22  E
-    letter_H_5x7,       // 23  H
-    letter_ru_I_cap_5x7,   // 24  И
-    letter_K_5x7,       // 25  K
-    letter_L_cap_5x7,   // 26  L
-    letter_M_cap_5x7,   // 27  M
-    letter_N_cap_5x7,   // 28  N
-    letter_O_cap_5x7,   // 29  O
-    letter_m_5x7,       // 30  m (строчная)
-    letter_P_5x7,       // 31  p
+    letter_A_cap_5x7,   // 18  A
+    letter_C_5x7,       // 19  C
+    letter_D_cap_5x7,   // 20  D
+    letter_E_cap_5x7,   // 21  E
+    letter_H_5x7,       // 22  H
+    letter_K_5x7,       // 23  K
+    letter_M_cap_5x7,   // 24  M
+    letter_N_cap_5x7,   // 25  N
+    letter_O_cap_5x7,   // 26  O
+    letter_m_5x7,       // 27  m (строчная)
+    letter_P_5x7,       // 28  p
 
     // РУССКИЕ БУКВЫ (алфавитный порядок)
-		letter_V_cap_5x7,   		// 32  В
-    letter_ru_Zh_cap_5x7,   // 33  Ж
-    letter_ru_P_cap_5x7,    // 34  П
-    letter_ru_T_5x7,        // 35  Т
-    letter_ru_U_cap_5x7,    // 36  У
-		letter_ru_F_cap_5x7, 		// 37  Ф
-		letter_ru_Ch_cap_5x7,		// 38  Ч
-    letter_ru_SoftSign_5x7, // 39  Ь
-    letter_ru_Ya_cap_5x7    // 40  Я
+		letter_ru_V_cap_5x7,   		// 29  В
+		letter_ru_G_cap_5x7,			// 30  Г
+    letter_ru_Zh_cap_5x7,   	// 31  Ж
+		letter_ru_I_cap_5x7,			// 32  И
+		letter_ru_L_cap_5x7,   		// 33  Л
+    letter_ru_P_cap_5x7,    	// 34  П
+    letter_ru_T_5x7,        	// 35  Т
+    letter_ru_U_cap_5x7,    	// 36  У
+		letter_ru_F_cap_5x7, 			// 37  Ф
+		letter_ru_Ch_cap_5x7,			// 38  Ч
+    letter_ru_SoftSign_5x7, 	// 39  Ь
+    letter_ru_Ya_cap_5x7    	// 40  Я
 };
+
+// Индексы: Т(35), Е(21), M(24), П(34), Е(21), Р(28), А(18), Т(35), У(36), Р(28), А(18)
+const uint8_t temperature_full_indices[] = {35, 21, 24, 34, 21, 28, 18, 35, 36, 28, 18};
+//У(36) С(19) Т(35) А(18) В(29) K(23) А(18) :(14)
+const uint8_t ustavka_indices[] = {36, 19, 35, 18, 29, 23, 18, 14};
+
+//Фактическая температура
+//Ф(37) А(18) K(23) Т(36) И(32) Ч(38) Е(21) С(19) К(23) А(18) Я(40) :14 
+const uint8_t current_value_indices[] = {37, 18, 23, 35, 32, 38, 21, 19, 23, 18, 40, 14};
+//Н(22)	А(18)	Г(31) Р(28)	Е(21)	В(29)	ПРОБЕЛ(10)		О(26) С(19) Т(36) А(18) Н(22) О(26) В(29) Л(33) Е(21) Н(22)	!(11)
+const uint8_t stop_indices[] = {22, 18, 30, 28, 21, 29, 10, 26, 19, 35, 18, 22, 26, 29, 33, 21, 22, 11};
+
 
 const uint8_t colon_5x7[COL_PX] = {0x00, 0x36, 0x36, 0x00, 0x00};// Двоеточие
 const uint8_t minus_5x7[COL_PX] = {0x00, 0x08, 0x08, 0x08, 0x00};// Минус
@@ -64,9 +76,7 @@ const uint8_t letter_C_5x7[COL_PX] = {0x3E, 0x41, 0x41, 0x41, 0x22};// Буква C
 const uint8_t percent_5x7[COL_PX] = {0x11, 0x10, 0x0E, 0x01, 0x11};//{0x03, 0x19, 0x04, 0x13, 0x18};//{0x11, 0x10, 0x0E, 0x01, 0x11};//{0x61, 0x52, 0x0C, 0x52, 0x61};  // '%'
 const uint8_t percent_15x21[15] = {0};  // '%'
 const uint8_t exclamation_5x7[COL_PX] = {0x00, 0x5F, 0x00, 0x00, 0x00}; // !
-
-//const uint8_t letter_r_5x7[5]   = {0x7F, 0x09, 0x19, 0x29, 0x46}; // р
-const uint8_t letter_V_cap_5x7[5] = {0x7F, 0x49, 0x49, 0x49, 0x36};// B
+const uint8_t letter_ru_V_cap_5x7[5] = {0x7F, 0x49, 0x49, 0x49, 0x36};// B
 const uint8_t letter_P_5x7[5] = {0x7F, 0x09, 0x09, 0x09, 0x06}; // p
 const uint8_t letter_E_cap_5x7[5] = {0x7F, 0x49, 0x49, 0x49, 0x41}; // E
 const uint8_t letter_m_5x7[5]   = {0x7F, 0x02, 0x0C, 0x02, 0x7F}; // м
@@ -78,7 +88,7 @@ const uint8_t letter_ru_T_5x7[5] = {0x01, 0x01, 0x7F, 0x01, 0x01}; //T
 const uint8_t letter_ru_P_cap_5x7[5] = {0x7F, 0x01, 0x01, 0x01, 0x7F}; //П
 const uint8_t letter_A_cap_5x7[5] = {0x7E, 0x09, 0x09, 0x09, 0x7E};
 const uint8_t hyphen_5x7[5] = {0x00, 0x08, 0x08, 0x08, 0x00}; // дефис
-const uint8_t letter_L_cap_5x7[5] = {0x40, 0x3F, 0x01, 0x01, 0x7F};
+const uint8_t letter_ru_L_cap_5x7[5] = {0x40, 0x3F, 0x01, 0x01, 0x7F};
 const uint8_t letter_ru_Zh_cap_5x7[5] = {0x63, 0x14, 0x7F, 0x14, 0x63};// Ж
 const uint8_t letter_N_cap_5x7[5] = {0x7F, 0x08, 0x08, 0x08, 0x7F};// Н 
 const uint8_t letter_O_cap_5x7[5] = {0x3E, 0x41, 0x41, 0x41, 0x3E};// О
@@ -92,16 +102,7 @@ const uint8_t letter_K_5x7[5] = {0x7F,0x08,0x14,0x22,0x41};// K
 //const uint8_t letter_ru_Shche_cap_5x7[5] = {0x7F, 0x00, 0x7F, 0x0E, 0x10};//{0x7F, 0x10, 0x10, 0x10, 0x7F};//{0x7F, 0x00, 0x7F, 0x7E, 0x01}; // Щ
 const uint8_t letter_ru_F_cap_5x7[5] = {0x1C, 0x22, 0x7F, 0x22, 0x1C};// Ф
 const uint8_t letter_ru_Ch_cap_5x7[5] = {0x07,0x08,0x08,0x08,0x7F};// Ч
-
-
-// Индексы: Т(35), Е(22), M(27), П(34), Е(22), Р(31), А(19), Т(35), У(36), Р(31), А(19)
-const uint8_t temperature_full_indices[] = {35, 22, 27, 34, 22, 31, 19, 35, 36, 31, 19};
-//У(36) С(20) Т(35) А(19) В(32) K(25) А(19) :(14)
-const uint8_t ustavka_indices[] = {36, 20, 35, 19, 32, 25, 19, 14};
-
-//Фактическое значение
-//Ф(37) А(19) K(25) Т(35) И(24) Ч(38) Е(22) С() К(25) О(29) Е(22) :14 
-const uint8_t current_value_indices[] = {37, 19, 25, 35, 24, 38, 22, 20, 25, 29, 22, 14};
+const uint8_t letter_ru_G_cap_5x7[5] = {0x7F, 0x01, 0x01, 0x01, 0x01}; // Г
 
 //Битовые маски символов (5x7)
 // Цифры 0..9
@@ -355,15 +356,16 @@ void OLED_fill_indices(uint8_t *indices, const uint8_t hours, const uint8_t minu
 		indices[3] = dozens_minutes;
 		indices[4] = minutes % 10;
 }
-
+/*
 void OLED_PrintTemperature(uint8_t x, uint8_t y, float temperature, uint8_t scale, const uint8_t **font_table)
 {
 		uint8_t indices[10];  // достаточно для -XX.X°C
     uint8_t cnt = 0;
 
     // Знак
-    if (temperature < 0) {
-        indices[cnt++] = 11;  // минус
+    if (temperature < 0)
+		{
+        indices[cnt++] = 15;  // минус
         temperature = -temperature;//цифра отрицательная но чтобы работало, надо превратить в положительную
     }
 
@@ -405,100 +407,82 @@ void OLED_PrintTemperature(uint8_t x, uint8_t y, float temperature, uint8_t scal
     indices[cnt++] = frac; // цифра 0..9
 
     // Градус и C
-    indices[cnt++] = 18;   // °
-    indices[cnt++] = 20;   // C
+    indices[cnt++] = 17;   // °
+    indices[cnt++] = 19;   // C
 
     // Вывод строки
     OLED_PrintScaledSymbols(x, y, font_table, indices, cnt, scale);
-}
-
-
-void OLED_PrintHumidity(uint8_t x, uint8_t y, float humidity, uint8_t scale, const uint8_t **font_table)
+}*/
+void OLED_PrintTemperature(uint8_t x, uint8_t y, float temperature, uint8_t scale, const uint8_t **font_table)
 {
-		uint8_t indices[6];   // максимум: две цифры, точка, десятая, '%' => 5 символов
+    uint8_t indices[12];  // -XXX.X°C Запас на все символы: знак + 3 цифры + точка + 1 цифра + ° + C
     uint8_t cnt = 0;
 
-    // Ограничиваем диапазон 0.0 – 100.0
-    if (humidity < 0.0f) humidity = 0.0f;
-    if (humidity > 100.0f) humidity = 100.0f;
+    // Сохраняем знак и работаем с модулем
+    bool is_negative = false;
+    if (temperature < 0)
+		{
+        is_negative = true;
+        temperature = -temperature;
+    }
 
     // Целая часть
-    int whole = (int)humidity;
-    uint8_t whole_digits[3];
+    int whole = (int)temperature;          // Отбрасываем дробную часть
+    float frac_part = temperature - whole; // Дробная часть отдельно
+
+    // Получаем цифры целой части
+    uint8_t whole_digits[4];               // Максимум 3 цифры (0–999), но массив чуть больше для спокойствия
     uint8_t whole_len = 0;
+
     if (whole == 0) {
         whole_digits[0] = 0;
         whole_len = 1;
-    } else {
-        while (whole > 0) {
+    }
+		else
+		{
+        while (whole > 0 && whole_len < 4)
+				{
             whole_digits[whole_len++] = whole % 10;
             whole /= 10;
         }
-        // Разворачиваем (старший разряд первым)
-        for (uint8_t i = 0; i < whole_len / 2; i++) {
-            uint8_t tmp = whole_digits[i];
+        // Разворот цифр (чтобы старший разряд был первым)
+        for (uint8_t i = 0; i < whole_len / 2; i++)
+				{
+            uint8_t t = whole_digits[i];
             whole_digits[i] = whole_digits[whole_len - 1 - i];
-            whole_digits[whole_len - 1 - i] = tmp;
+            whole_digits[whole_len - 1 - i] = t;
         }
     }
-    for (uint8_t i = 0; i < whole_len; i++) {
-        indices[cnt++] = whole_digits[i];   // 0..9
+
+    // Вывод знака, если нужно
+    if (is_negative)
+		{
+        indices[cnt++] = 15;  // минус
     }
 
-    // Десятая доля
-    indices[cnt++] = 17;  // точка (.)
-    int frac = (int)((humidity - whole) * 10 + 0.5f);  // округление
-    if (frac > 9) frac = 9;
-    indices[cnt++] = frac;  // 0..9
+    // Выводим целую часть (ровно столько цифр, сколько есть, без лишних нулей слева)
+    for (uint8_t i = 0; i < whole_len; i++)
+		{
+        indices[cnt++] = whole_digits[i]; // цифры 0–9
+    }
 
-    
-//    indices[cnt++] = 15;   // '%'
+    // Точка
+    indices[cnt++] = 17;  // точка
+
+    // Дробная часть: одна цифра после запятой с корректным округлением
+    int frac = (int)(frac_part * 10 + 0.5f);  // +0.5 — это округление до ближайшего
+    if (frac >= 10)
+		{                         // на случай, если из-за погрешности стало 10
+        frac = 9;
+        // Если нужно, можно дополнительно обработать перенос в целую часть, но для одного знака после запятой проще обрезать
+    }
+    indices[cnt++] = frac;
+
+    // Градус и C
+    indices[cnt++] = 17;  // °
+    indices[cnt++] = 19;  // C
 
     // Вывод строки
     OLED_PrintScaledSymbols(x, y, font_table, indices, cnt, scale);
 }
 
-void OLED_PrintPressure(/*uint8_t x, */uint8_t y, uint32_t pressure, uint8_t scale, const uint8_t **font_table)
-{
-    // --- Преобразование числа в индексы цифр ---
-    uint8_t digits[10];
-    uint8_t len = 0;
-    if (pressure == 0) {
-        digits[len++] = 0;
-    } else {
-        uint32_t temp = pressure;
-        while (temp > 0) {
-            digits[len++] = temp % 10;
-            temp /= 10;
-        }
-        // разворот (старший разряд первым)
-        for (uint8_t i = 0; i < len / 2; i++) {
-            uint8_t t = digits[i];
-            digits[i] = digits[len - 1 - i];
-            digits[len - 1 - i] = t;
-        }
-    }
-
-    // --- Центрирование числа ---
-    // ширина одного символа = 5*scale, зазор между символами = scale
-    // общая ширина без конечного зазора = len*5*scale + (len-1)*scale
-    uint16_t num_width = (len * 6 - 1) * scale;
-    uint8_t x_num = (OLED_WIDTH - num_width) / 2;
-    if (x_num > OLED_WIDTH) x_num = 0;
-    OLED_PrintScaledSymbols(x_num, y, font_table, digits, len, scale);
-
-    // --- Единица измерения «мм.рт.ст.» (масштаб 2) ---
-    const uint8_t unit_idx[] = {17, 17, 12, 18, 19, 12, 14, 19};
-    //                          м   м   .    р   т   .    с   т   .
-    const uint8_t unit_len = sizeof(unit_idx);
-    const uint8_t unit_scale = 2;
-    uint16_t unit_width = (unit_len * 6 - 1) * unit_scale;
-    uint8_t x_unit = (OLED_WIDTH - unit_width) / 2;
-    if (x_unit > OLED_WIDTH) x_unit = 0;
-
-    // Отступ вниз от цифр (высота цифр = 7*scale + небольшой зазор)
-    uint8_t y_unit = y + 7 * scale + 2;
-    if (y_unit > OLED_HEIGHT - 7*unit_scale) y_unit = OLED_HEIGHT - 7*unit_scale;
-
-    OLED_PrintScaledSymbols(x_unit, y_unit, font_table, unit_idx, unit_len, unit_scale);
-}

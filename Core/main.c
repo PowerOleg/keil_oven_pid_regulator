@@ -20,7 +20,39 @@ char buffer_uart[UART_BUFFER_SIZE] = {0};// Буфер для отправки данных на ПК
 Led led_a8;
 Led led_c13;
 
+uint8_t is_stop = 1;
+uint8_t is_set_up_temperature = 1;
+
+uint8_t setpoint_array[5] = {0, 0, 0, 17, 0};//000.0
+float setpoint = 0.0f;
 float temperature_c_previous = 0.0f;
+
+
+
+float Convert_setpoint_to_float(const uint8_t* setpoint_array)
+{
+		return (setpoint_array[0] * 100) + (setpoint_array[1] * 10) + setpoint_array[2] + (setpoint_array[4] * 0.1f);
+}
+	
+void Set_up_setpoint(const uint8_t key)
+{
+		if (key == 0x00 || key == START || key == STOP || key == SET_UP_TEMPERATURE || key == CONNECT_TO_PC)
+				return;
+		
+		
+		if (symbol_index == 3)
+				symbol_index++;
+		
+
+		setpoint_array[symbol_index++] = key - '0';
+
+		setpoint = Convert_setpoint_to_float(setpoint_array);
+
+//		symbol_index++;
+		if (symbol_index >= 5)
+				is_set_up_temperature = 0;
+		cur_action = 0xFF;
+}
 
 int main(void)
 {
@@ -55,11 +87,20 @@ int main(void)
 		Delay_us(500000);
 		Led_toggle(&led_c13);
 		Led_toggle(&led_a8);
+		
+
 
 		while(1)
 		{
 				Delay_us(20000);
-
+							pressed_key = Check_keypad_pressed();
+				if (pressed_key != NO_KEY)
+						cur_action = pressed_key;
+			
+				if (is_set_up_temperature)
+						Set_up_setpoint(cur_action);
+			
+			
 				if (tim3_1sec_flag)
 				{
 						Led_toggle(&led_c13);
@@ -68,37 +109,42 @@ int main(void)
 						{
 								temperature_c_previous = temperature_c;
 								OLED_ClearBuffer();
-								OLED_PrintScaledSymbols(25, 8, font_table, temperature_full_indices, 11, 1);
-								OLED_PrintScaledSymbols(0, 20, font_table, ustavka_indices, 8, 1);
-								OLED_PrintTemperature(0, 30, temperature_c, 1, font_table);
-								OLED_PrintScaledSymbols(0, 40, font_table, current_value_indices, 12, 1);
-								OLED_PrintTemperature(0, 50, temperature_c, 1, font_table);
+								OLED_PrintScaledSymbols(25, 0, font_table, temperature_full_indices, 11, 1);
+								OLED_PrintScaledSymbols(0, 10, font_table, ustavka_indices, 8, 1);
+								OLED_PrintTemperature(0, 20, setpoint, 1, font_table);
+								OLED_PrintScaledSymbols(0, 30, font_table, current_value_indices, 12, 1);
+								OLED_PrintTemperature(0, 40, temperature_c, 1, font_table);
+								if (is_stop)
+										OLED_PrintScaledSymbols(0, 54, font_table, stop_indices, 18, 1);
 								OLED_UpdateScreen();
 						}
 					
 						tim3_1sec_flag = 0;
 				}
 					
-				pressed_key = Check_keypad_pressed();
-				if (pressed_key != NO_KEY)
-						cur_action = pressed_key;
+
 
 				
 				switch (cur_action)
 				{
-						case LEFT:
-
-								break;
-						case RIGHT:
-
+						case SET_UP_TEMPERATURE:
+								is_stop = 1;
+								is_set_up_temperature = 1;
+								symbol_index = 0;
+								cur_action = STOP;
 								break;
 						case START:
-
+								is_stop = 0;
+								is_set_up_temperature = 0;
+								OLED_ClearBuffer();
 								break;
 						case STOP:
-
+								is_stop = 1;
+//							OLED_ClearBuffer();
+								OLED_PrintScaledSymbols(0, 54, font_table, stop_indices, 18, 1);
+								OLED_UpdateScreen();
 								break;
-						case SEND_DATA_TO_PC:
+						case CONNECT_TO_PC:
 						{
 								/*uint16_t buffer_size = 0;//Get_uart_buffer(buffer_uart);
 								if (buffer_size > 0)
@@ -113,9 +159,13 @@ int main(void)
 								cur_action = previous_action;*/
 								break;
 						}
-
+/*						case RIGHT:
+								if (symbol_index < 5)
+										symbol_index++;
+								cur_action = previous_action;
+								break;*/
 				}
-				previous_action = cur_action;
+//				previous_action = cur_action;
 		}
 	
 }
