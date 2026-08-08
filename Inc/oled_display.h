@@ -56,7 +56,7 @@ extern const uint8_t letter_ru_U_cap_5x7[5];
 extern const uint8_t letter_ru_F_cap_5x7[5];
 extern const uint8_t letter_ru_Ch_cap_5x7[5];
 extern const uint8_t letter_ru_G_cap_5x7[5];
-extern const uint8_t slash_5x7[5];
+extern const uint8_t underscore_5x7[5];
 extern const uint8_t letter_H_5x7[5];
 
 extern const uint8_t temperature_full_indices[];

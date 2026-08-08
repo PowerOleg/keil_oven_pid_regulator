@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <math.h>
 #include "common.h"
 #include "hw_config.h"
 #include "led.h"
@@ -23,7 +24,8 @@ Led led_c13;
 uint8_t is_stop = 1;
 uint8_t is_set_up_temperature = 1;
 
-uint8_t setpoint_array[5] = {0, 0, 0, 16, 0};//000.0
+const uint8_t setpoint_size = 7;
+uint8_t setpoint_array[setpoint_size] = {13, 0, 0, 16, 0, 17, 19};//000.0
 float setpoint = 0.0f;
 float temperature_c_previous = 0.0f;
 
@@ -31,6 +33,20 @@ float temperature_c_previous = 0.0f;
 
 float Convert_setpoint_to_float(const uint8_t* setpoint_array)
 {
+/*		float result = 0.0f;
+		for (uint8_t i = 0, j = 2; i < 5; i++, j--)
+		{
+				if (setpoint_array[i] == 13 || setpoint_array[i] == 16)//убераем подчеркивание и точку из расчетов
+						continue;
+				if (i == 4)
+				{
+						result += setpoint_array[i] * 0.1f;
+						continue;
+				}
+				uint16_t n = (uint16_t)(pow(10, j) + 0.5);
+				result += setpoint_array[i] * n;
+		}
+*/
 		return ((setpoint_array[0] * 100) + (setpoint_array[1] * 10) + setpoint_array[2] + (setpoint_array[4] * 0.1f));
 }
 	
@@ -38,20 +54,17 @@ void Set_up_setpoint(const uint8_t key)
 {
 		if (key == 0x00 || key == 0xFF || key == START || key == STOP || key == SET_UP_TEMPERATURE || key == CONNECT_TO_PC)
 				return;
-		
-		
-		if (symbol_index == 3)
-				symbol_index++;
-		
 
 		setpoint_array[symbol_index++] = key - '0';
-
-		setpoint = Convert_setpoint_to_float(setpoint_array);
-
-//		symbol_index++;
-		if (symbol_index >= 5)
-				is_set_up_temperature = 0;
+		if (symbol_index == 3)
+				symbol_index++;
 		cur_action = 0xFF;
+		if (symbol_index >= 5)
+		{
+				is_set_up_temperature = 0;
+				return;
+		}
+		setpoint_array[symbol_index] = 13;
 }
 
 int main(void)
@@ -87,13 +100,12 @@ int main(void)
 		Delay_us(500000);
 		Led_toggle(&led_c13);
 		Led_toggle(&led_a8);
-		
 
 
 		while(1)
 		{
 				Delay_us(20000);
-							pressed_key = Check_keypad_pressed();
+				pressed_key = Check_keypad_pressed();
 				if (pressed_key != NO_KEY)
 						cur_action = pressed_key;
 			
@@ -111,7 +123,7 @@ int main(void)
 								OLED_ClearBuffer();
 								OLED_PrintScaledSymbols(25, 0, font_table, temperature_full_indices, 11, 1);
 								OLED_PrintScaledSymbols(0, 10, font_table, ustavka_indices, 8, 1);
-								OLED_PrintTemperature(0, 20, setpoint, 1, font_table);
+								OLED_PrintScaledSymbols(0, 20, font_table, setpoint_array, setpoint_size, 1);//OLED_PrintTemperature(0, 20, setpoint, 1, font_table);
 								OLED_PrintScaledSymbols(0, 30, font_table, current_value_indices, 12, 1);
 								OLED_PrintTemperature(0, 40, temperature_c, 1, font_table);
 								if (is_stop)
@@ -130,11 +142,13 @@ int main(void)
 								is_stop = 1;
 								is_set_up_temperature = 1;
 								symbol_index = 0;
+								setpoint_array[symbol_index] = 13;
 								cur_action = STOP;
 								break;
 						case START:
 								is_stop = 0;
 								is_set_up_temperature = 0;
+								setpoint = Convert_setpoint_to_float(setpoint_array);
 								break;
 						case STOP:
 								is_stop = 1;
