@@ -10,7 +10,6 @@
 #include "stm32f10x_i2c.h"
 
 
-
 uint8_t Clock_config_72mhz(void)
 {
 		ErrorStatus HSEStartUpStatus;
@@ -37,79 +36,6 @@ uint8_t Clock_config_72mhz(void)
 		}
 		return ERROR;
 }
-/*
-void RTC_init_lse(const uint16_t y, const uint8_t m, const uint8_t d, const uint8_t h, const uint8_t min, const uint8_t s)
-{
-		PWR_BackupAccessCmd(ENABLE);
-		if ((RCC->BDCR & RCC_BDCR_RTCEN) != RCC_BDCR_RTCEN)
-		{
-				RCC_BackupResetCmd(ENABLE);
-				RCC_BackupResetCmd(DISABLE);
-				RCC_LSEConfig(RCC_LSE_ON);
-				while ((RCC->BDCR & RCC_BDCR_LSERDY) != RCC_BDCR_LSERDY) {}
-				RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
-				RTC_SetPrescaler(RTC_PRESCALER);
-				RCC_RTCCLKCmd(ENABLE);
-				RTC_WaitForSynchro();
-		}
-		Delay_us(1000000);
-		currentDateTime.RTC_Year = y;
-    currentDateTime.RTC_Month = m;
-    currentDateTime.RTC_Day = d;
-    currentDateTime.RTC_Hours = h;
-    currentDateTime.RTC_Minutes = min;
-    currentDateTime.RTC_Seconds = s;
-		RTC_SetCounter(RTC_GetRTC_Counter());
-		
-		Delay_us(400000);
-		RTC_ITConfig(RTC_IT_SEC, ENABLE);      // разрешить прерывание по секунде
-		RTC_ClearITPendingBit(RTC_IT_SEC);     // на всякий случай сбросим флаг
-
-		NVIC_InitTypeDef NVIC_InitStruct;
-		NVIC_InitStruct.NVIC_IRQChannel = RTC_IRQn;
-		NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = NVIC_RTC_PRIORITY;
-		NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
-		NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
-		NVIC_Init(&NVIC_InitStruct);
-}
-
-uint8_t RTC_init_lsi(void)
-{
-    // 2. Разрешаем доступ к backup-области
-    PWR_BackupAccessCmd(ENABLE);
-
-    // Если RTC ещё не включен – выполняем инициализацию
-    if ((RCC->BDCR & RCC_BDCR_RTCEN) != RCC_BDCR_RTCEN)
-    {
-        // Сброс backup-домена (опционально, но очищает все настройки)
-        RCC_BackupResetCmd(ENABLE);
-        RCC_BackupResetCmd(DISABLE);
-
-        // 3. Запуск LSI и ожидание готовности
-        RCC_LSICmd(ENABLE);
-        while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET);
-
-        // 4. Выбор LSI как источника тактирования RTC
-        RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
-
-        // 5. Включение RTC
-        RCC_RTCCLKCmd(ENABLE);
-
-        // Небольшая задержка для стабилизации тактирования (~несколько циклов LSI)
-        for (volatile uint32_t i = 0; i < 4000; i++);
-
-        // 6. Ожидание синхронизации регистров (теперь должно сработать)
-        RTC_WaitForSynchro();
-
-        // 7. Установка предделителя
-        RTC_SetPrescaler(39999);
-        RTC_WaitForSynchro();
-
-        return SUCCESS;
-    }
-
-    return ERROR;
-}*/
 
 void SPI1_common_init(void)
 {
@@ -256,6 +182,20 @@ void Init_pinb10_button(void)
 			nvic_button_10.NVIC_IRQChannelSubPriority = 0;
 			nvic_button_10.NVIC_IRQChannelCmd = ENABLE;
 			NVIC_Init(&nvic_button_10);
+}
+
+/* Инициализация GPIOA (PA0 как AF output для TIM2_CH1) */
+void Init_pina0_pwm_gpio(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+
+    /* PA0: Alternate Function Output, Push-Pull, 50 MHz */
+    GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 void Error_handler(void)

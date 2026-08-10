@@ -9,7 +9,7 @@
 #include "timer.h"
 #include "keypad4x4.h"
 #include "definitions.h"
-#include "max6675.h"
+#include "heater.h"
 
 volatile uint8_t cur_action = 0;
 volatile uint8_t previous_action = 0;
@@ -73,14 +73,14 @@ int main(void)
 				Error_handler();
 
 		RCC_APB2PeriphClockCmd((RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_SPI1), ENABLE);
-		RCC_APB1PeriphClockCmd((RCC_APB1Periph_USART2 | RCC_APB1Periph_PWR | RCC_APB1Periph_BKP), ENABLE);
+//		RCC_APB1PeriphClockCmd((RCC_APB1Periph_USART2 | RCC_APB1Periph_PWR | RCC_APB1Periph_BKP), ENABLE);
 		Led_init(&led_a8, GPIOA, GPIO_Pin_8);
 		Led_init(&led_c13, GPIOC, GPIO_Pin_13);
 		Tim3_init_1sec_timer();
 		Init_systick_us();
-		Tim2_count_mode_up();
 		
-		Keypad_init_gpio();
+		Tim2_count_mode_up();
+		Keypad_init_gpio();//Tim2
 		Uart2_init();
 
 	  SPI1_common_gpio_init();
@@ -95,12 +95,12 @@ int main(void)
     OLED_ClearBuffer();
 	
 		SPI_clear_rxne();
-				
+		Heater_init();
 		Led_toggle(&led_a8);
 		Delay_us(500000);
 		Led_toggle(&led_c13);
 		Led_toggle(&led_a8);
-
+		
 
 		while(1)
 		{
@@ -112,7 +112,6 @@ int main(void)
 				if (is_set_up_temperature)
 						Set_up_setpoint(cur_action);
 			
-			
 				if (tim3_1sec_flag)
 				{
 						Led_toggle(&led_c13);
@@ -123,7 +122,7 @@ int main(void)
 								OLED_ClearBuffer();
 								OLED_PrintScaledSymbols(25, 0, font_table, temperature_full_indices, 11, 1);
 								OLED_PrintScaledSymbols(0, 10, font_table, ustavka_indices, 8, 1);
-								OLED_PrintScaledSymbols(0, 20, font_table, setpoint_array, setpoint_size, 1);//OLED_PrintTemperature(0, 20, setpoint, 1, font_table);
+								OLED_PrintScaledSymbols(0, 20, font_table, setpoint_array, setpoint_size, 1);
 								OLED_PrintScaledSymbols(0, 30, font_table, current_value_indices, 12, 1);
 								OLED_PrintTemperature(0, 40, temperature_c, 1, font_table);
 								if (is_stop)
@@ -149,9 +148,11 @@ int main(void)
 								is_stop = 0;
 								is_set_up_temperature = 0;
 								setpoint = Convert_setpoint_to_float(setpoint_array);
+								Set_pwm_duty(100);
 								break;
 						case STOP:
 								is_stop = 1;
+								Set_pwm_duty(0);
 								break;
 						case CONNECT_TO_PC:
 						{

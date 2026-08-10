@@ -480,14 +480,14 @@
               <FilePath>.\Src\uart.c</FilePath>
             </File>
             <File>
-              <FileName>max6675.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Inc\max6675.h</FilePath>
+              <FileName>heater.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\heater.c</FilePath>
             </File>
             <File>
-              <FileName>max6675.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Src\max6675.c</FilePath>
+              <FileName>heater.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Inc\heater.h</FilePath>
             </File>
           </Files>
         </Group>

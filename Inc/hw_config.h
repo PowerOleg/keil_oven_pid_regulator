@@ -13,6 +13,7 @@ uint8_t Clock_config_72mhz(void);
 void Init_systick_us(void);
 void Init_pina9_button(void);
 void Init_pinb10_button(void);
+void Init_pina0_pwm_gpio(void);
 void Error_handler(void);
 
 #endif

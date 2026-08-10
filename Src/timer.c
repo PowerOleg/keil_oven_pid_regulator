@@ -22,8 +22,8 @@ void Tim2_count_mode_up(void)
 		timer_init.TIM_Period            = 10 - 1; 
 		timer_init.TIM_ClockDivision     = TIM_CKD_DIV1;
 		timer_init.TIM_RepetitionCounter = 0;
-		
 		TIM_TimeBaseInit(TIM2, &timer_init);
+	
 		TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
 		NVIC_InitTypeDef nvic_init;
 		nvic_init.NVIC_IRQChannel = TIM2_IRQn;
