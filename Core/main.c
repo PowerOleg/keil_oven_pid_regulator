@@ -118,6 +118,7 @@ int main(void)
 						float temperature_c = Max6675_get_temperature_c();
 						if (temperature_c != temperature_c_previous)
 						{
+								Heater_average_filter(&temperature_c);
 								temperature_c_previous = temperature_c;
 								OLED_ClearBuffer();
 								OLED_PrintScaledSymbols(25, 0, font_table, temperature_full_indices, 11, 1);
@@ -132,6 +133,9 @@ int main(void)
 								OLED_UpdateScreen();
 						}
 					
+						if (!is_stop)
+								Heater_on(setpoint, temperature_c);
+						
 						tim3_1sec_flag = 0;
 				}
 				
@@ -145,10 +149,10 @@ int main(void)
 								cur_action = STOP;
 								break;
 						case START:
+								if (is_stop)
+										setpoint = Convert_setpoint_to_float(setpoint_array);
 								is_stop = 0;
 								is_set_up_temperature = 0;
-								setpoint = Convert_setpoint_to_float(setpoint_array);
-								Set_pwm_duty(100);
 								break;
 						case STOP:
 								is_stop = 1;

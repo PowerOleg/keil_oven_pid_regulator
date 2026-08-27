@@ -5,6 +5,8 @@
 
 #define PID_CS_LOW()    GPIO_ResetBits(GPIOA, GPIO_Pin_4)
 #define PID_CS_HIGH()   GPIO_SetBits(GPIOA, GPIO_Pin_4)
+#define FILTER_SIZE 3
+
 
 static int Max6675_read_raw(void)
 {
@@ -98,3 +100,29 @@ void Set_pwm_duty(uint8_t percent)
     TIM4->CCR4 = ccr_value;// CH4
 }
 
+void Heater_on(float setpoint, float temperature_c)
+{
+		Set_pwm_duty(100);
+	
+	
+}
+
+void Heater_average_filter(float *value)
+{
+		static float temp_buf[FILTER_SIZE] = {0};
+		static uint8_t index = 0;
+		static uint16_t count = 0;//важный параметр потому что показывает сколько значений брать в расчет среднего значения
+		
+		temp_buf[index] = *value;
+		index = (index + 1) % FILTER_SIZE;
+		if (count < FILTER_SIZE)
+				count++;
+		
+    float sum_temp = 0.0f;
+    for (uint8_t i = 0; i < count; i++)
+		{
+        uint8_t idx = (index + i) % count;
+        sum_temp += temp_buf[idx];
+    }
+    *value = sum_temp / count;
+}
