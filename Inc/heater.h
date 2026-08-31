@@ -3,6 +3,8 @@
 
 #include "stm32f10x.h"
 
+extern volatile float integral;
+
 float Max6675_get_temperature_c(void);
 void Heater_init(void);
 void Heater_on(float setpoint, float temperature_c);

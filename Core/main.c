@@ -76,7 +76,7 @@ int main(void)
 //		RCC_APB1PeriphClockCmd((RCC_APB1Periph_USART2 | RCC_APB1Periph_PWR | RCC_APB1Periph_BKP), ENABLE);
 		Led_init(&led_a8, GPIOA, GPIO_Pin_8);
 		Led_init(&led_c13, GPIOC, GPIO_Pin_13);
-		Tim3_init_1sec_timer();
+		Tim3_init_2sec_timer();
 		Init_systick_us();
 		
 		Tim2_count_mode_up();
@@ -112,7 +112,7 @@ int main(void)
 				if (is_set_up_temperature)
 						Set_up_setpoint(cur_action);
 			
-				if (tim3_1sec_flag)
+				if (tim3_2sec_flag)
 				{
 						Led_toggle(&led_c13);
 						float temperature_c = Max6675_get_temperature_c();
@@ -136,7 +136,7 @@ int main(void)
 						if (!is_stop)
 								Heater_on(setpoint, temperature_c);
 						
-						tim3_1sec_flag = 0;
+						tim3_2sec_flag = 0;
 				}
 				
 				switch (cur_action)
@@ -150,8 +150,11 @@ int main(void)
 								break;
 						case START:
 								if (is_stop)
+								{
 										setpoint = Convert_setpoint_to_float(setpoint_array);
-								is_stop = 0;
+										integral = 0;
+								}
+									is_stop = 0;
 								is_set_up_temperature = 0;
 								break;
 						case STOP:

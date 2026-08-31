@@ -35,23 +35,23 @@ void Tim2_count_mode_up(void)
 		TIM_Cmd(TIM2, ENABLE);
 }
 
-volatile uint8_t tim3_1sec_flag = 0;
+volatile uint8_t tim3_2sec_flag = 0;
 void TIM3_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) 
     {
-        tim3_1sec_flag = 1;
+        tim3_2sec_flag = 1;
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
     }
 }
 
-void Tim3_init_1sec_timer(void)
+void Tim3_init_2sec_timer(void)
 {
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 		TIM_TimeBaseInitTypeDef timer_init;
 		timer_init.TIM_Prescaler         = 40000 - 1;
 		timer_init.TIM_CounterMode       = TIM_CounterMode_Up;
-		timer_init.TIM_Period            = 1800 - 1; 
+		timer_init.TIM_Period            = 3600 - 1;
 		timer_init.TIM_ClockDivision     = TIM_CKD_DIV1;
 		timer_init.TIM_RepetitionCounter = 0;
 		

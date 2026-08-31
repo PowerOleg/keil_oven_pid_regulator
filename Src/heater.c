@@ -1,11 +1,30 @@
+#include <math.h>
+#include <stdlib.h>
+#include <limits.h> 
 #include "heater.h"
 #include "common.h"
 #include "stm32f10x_spi.h"
 #include "stm32f10x_tim.h"
 
+
 #define PID_CS_LOW()    GPIO_ResetBits(GPIOA, GPIO_Pin_4)
 #define PID_CS_HIGH()   GPIO_SetBits(GPIOA, GPIO_Pin_4)
 #define FILTER_SIZE 3
+
+//коэффициенты для получения уровня сигнала для регулирования мощностью нагрева
+#define	KP 20.0f
+#define	KI 0.02f
+#define	KD 40.0f //инерционность системы очень велика поэтому коэффициент большой
+#define K_ENVIRONMENT 20 //это коэфф. для добавления мощности чтобы компенсировать потери в окружающей среде плюсом к интегральной состовляющей//осень и влажность даже при мощности в 40% нагрев не происходит
+
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
+float volatile e0 = 0;//Предыдущее значение
+float volatile e = 0;//Пропорциональная ошибка — это мгновенная разница между желаемым и фактическим значением
+float volatile integral = 0;
+float volatile derivative = 0;
+const uint8_t dt = 1;
 
 
 static int Max6675_read_raw(void)
@@ -32,21 +51,6 @@ float Max6675_get_temperature_c(void)
     uint16_t raw_temp = Max6675_read_raw();
 		raw_temp = raw_temp >> 3;
 		return (float)raw_temp * 0.25f;
-/*	
-		if (raw & 0x0004)
-		{
-        // Бит 2 установлен — ошибка (термопара не подключена)
-        return -999.0f;
-    }
-
-    // Дополнительно: проверяем, что младшие 2 бита нулевые (должны быть по даташиту)
-    if ((raw & 0x0003) != 0)
-		{
-        // Нестандартное значение в зарезервированных битах — тоже ошибка
-        return -999.0f;
-    }
-
-    return (float)(raw >> 3) * 0.25f;*/
 }
 
 static void Init_b9_gpio(void)
@@ -100,13 +104,6 @@ void Set_pwm_duty(uint8_t percent)
     TIM4->CCR4 = ccr_value;// CH4
 }
 
-void Heater_on(float setpoint, float temperature_c)
-{
-		Set_pwm_duty(100);
-	
-	
-}
-
 void Heater_average_filter(float *value)
 {
 		static float temp_buf[FILTER_SIZE] = {0};
@@ -125,4 +122,21 @@ void Heater_average_filter(float *value)
         sum_temp += temp_buf[idx];
     }
     *value = sum_temp / count;
+}
+
+void Heater_on(float setpoint, float temperature_c)
+{
+		if (setpoint > 100.0f)
+				setpoint = 100.0f;
+		setpoint += 1.0f;
+		
+		e0 = e; 
+		e = setpoint - temperature_c;
+		float proportional = (KP * e);
+		integral = integral + (e * dt);
+		derivative = KD * (e-e0);
+
+		float pid_result = proportional + (KI * integral) + derivative;
+		uint8_t power = (uint8_t)MIN(MAX(roundf(pid_result), 0.0f), 100.0f);
+		Set_pwm_duty(power + K_ENVIRONMENT);
 }
