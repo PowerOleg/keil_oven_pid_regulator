@@ -13,15 +13,15 @@
 
 //коэффициенты для получения уровня сигнала для регулирования мощностью нагрева
 #define	KP 20.0f
-#define	KI 0.02f
-#define	KD 40.0f //инерционность системы очень велика поэтому коэффициент большой
-#define K_ENVIRONMENT 20 //это коэфф. для добавления мощности чтобы компенсировать потери в окружающей среде плюсом к интегральной состовляющей//осень и влажность даже при мощности в 40% нагрев не происходит
+#define	KI 0.01f
+#define	KD 40.0f
+#define K_ENVIRONMENT 10 //это коэфф. для добавления мощности, чтобы компенсировать потери в окружающей среде
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-float volatile e0 = 0;//Предыдущее значение
-float volatile e = 0;//Пропорциональная ошибка — это мгновенная разница между желаемым и фактическим значением
+float volatile e0 = 0; //Предыдущее значение e
+float volatile e = 0;
 float volatile integral = 0;
 float volatile derivative = 0;
 const uint8_t dt = 1;
@@ -124,19 +124,22 @@ void Heater_average_filter(float *value)
     *value = sum_temp / count;
 }
 
+void Heater_restart(void)
+{
+		integral = 0;
+		e = 0;
+}
+
 void Heater_on(float setpoint, float temperature_c)
 {
-		if (setpoint > 100.0f)
-				setpoint = 100.0f;
-		setpoint += 1.0f;
+		setpoint += 1.0f;//необязательная заглушка, чтобы держать температуру не ниже заданного уровня
 		
-		e0 = e; 
 		e = setpoint - temperature_c;
-		float proportional = (KP * e);
 		integral = integral + (e * dt);
-		derivative = KD * (e-e0);
-
-		float pid_result = proportional + (KI * integral) + derivative;
+		derivative = KD * ((e-e0) / dt);
+		e0 = e;
+	
+		float pid_result = KP * e + KI * integral + derivative;
 		uint8_t power = (uint8_t)MIN(MAX(roundf(pid_result), 0.0f), 100.0f);
 		Set_pwm_duty(power + K_ENVIRONMENT);
 }

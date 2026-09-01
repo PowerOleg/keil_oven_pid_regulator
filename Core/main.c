@@ -152,9 +152,9 @@ int main(void)
 								if (is_stop)
 								{
 										setpoint = Convert_setpoint_to_float(setpoint_array);
-										integral = 0;
+										Heater_restart();
 								}
-									is_stop = 0;
+								is_stop = 0;
 								is_set_up_temperature = 0;
 								break;
 						case STOP:
