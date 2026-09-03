@@ -64,6 +64,7 @@ extern const uint8_t ustavka_indices[];
 extern const uint8_t current_value_indices[];
 extern const uint8_t stop_indices[];
 extern const uint8_t start_indices[];
+extern const uint8_t pc_indices[];
 	
 void Oled_gpio_init(void);
 void Oled_spi_init(void);

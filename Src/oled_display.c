@@ -68,6 +68,8 @@ const uint8_t stop_indices[] = {21, 18, 29, 27, 20, 28, 10, 25, 19, 35, 18, 21, 
 //И(32) Д(20) Е(20) Т(35)	ПРОБЕЛ(10)	Н(21)	А(18)	Г(29) Р(27)	Е(20)	В(28)	!(11)
 const uint8_t start_indices[] = {32, 30, 20, 35, 10, 21, 18, 29, 27, 20, 28, 11};
 
+const uint8_t pc_indices[] = {27, 19};
+
 const uint8_t colon_5x7[COL_PX] = {0x00, 0x36, 0x36, 0x00, 0x00};// Двоеточие
 const uint8_t minus_5x7[COL_PX] = {0x00, 0x08, 0x08, 0x08, 0x00};// Минус
 const uint8_t dot_5x7[COL_PX]   = {0x00, 0x60, 0x60, 0x00, 0x00};// Точка

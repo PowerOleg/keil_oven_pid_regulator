@@ -16,37 +16,22 @@ volatile uint8_t previous_action = 0;
 
 volatile uint8_t pressed_key = 0;
 char display_buffer[DISPLAY_LINE_SIZE] = {0};
-char buffer_uart[UART_BUFFER_SIZE] = {0};// Буфер для отправки данных на ПК
 
 Led led_a8;
 Led led_c13;
 
-uint8_t is_stop = 1;
-uint8_t is_set_up_temperature = 1;
+volatile uint8_t is_stop = 1;
+volatile uint8_t is_set_up_temperature = 1;
+volatile uint8_t is_pc_connected = 0;
 
 const uint8_t setpoint_size = 7;
 uint8_t setpoint_array[setpoint_size] = {13, 0, 0, 16, 0, 17, 19};//000.0
-float setpoint = 0.0f;
-float temperature_c_previous = 0.0f;
-
+volatile float setpoint = 0.0f;
+volatile float temperature_c_previous = 0.0f;
 
 
 float Convert_setpoint_to_float(const uint8_t* setpoint_array)
 {
-/*		float result = 0.0f;
-		for (uint8_t i = 0, j = 2; i < 5; i++, j--)
-		{
-				if (setpoint_array[i] == 13 || setpoint_array[i] == 16)//убераем подчеркивание и точку из расчетов
-						continue;
-				if (i == 4)
-				{
-						result += setpoint_array[i] * 0.1f;
-						continue;
-				}
-				uint16_t n = (uint16_t)(pow(10, j) + 0.5);
-				result += setpoint_array[i] * n;
-		}
-*/
 		return ((setpoint_array[0] * 100) + (setpoint_array[1] * 10) + setpoint_array[2] + (setpoint_array[4] * 0.1f));
 }
 	
@@ -65,6 +50,45 @@ void Set_up_setpoint(const uint8_t key)
 				return;
 		}
 		setpoint_array[symbol_index] = 13;
+}
+
+void Set_action(const uint8_t action)
+{
+		switch (cur_action)
+		{
+				case SET_UP_TEMPERATURE:
+						is_stop = 1;
+						is_set_up_temperature = 1;
+						symbol_index = 0;
+						setpoint_array[symbol_index] = 13;
+						cur_action = STOP;
+						break;
+				case START:
+						if (is_stop)
+						{
+								setpoint = Convert_setpoint_to_float(setpoint_array);
+								if (setpoint < 999.0f)
+								{
+										is_stop = 0;
+										is_set_up_temperature = 0;
+										Heater_restart();
+								}
+						}
+						break;
+				case STOP:
+						is_stop = 1;
+						Set_pwm_duty(0);
+						break;
+		}
+		is_pc_connected = 0;
+}
+
+void Manage_from_pc(const uint8_t action)
+{
+		if (!is_pc_connected)
+				Uart2_send("1");
+		is_pc_connected = 1;
+		Uart2_receive_string();
 }
 
 int main(void)
@@ -101,7 +125,6 @@ int main(void)
 		Led_toggle(&led_c13);
 		Led_toggle(&led_a8);
 		
-
 		while(1)
 		{
 				Delay_us(20000);
@@ -133,52 +156,22 @@ int main(void)
 								OLED_UpdateScreen();
 						}
 					
+						if (is_pc_connected)
+						{
+								OLED_PrintScaledSymbols(110, 0, font_table, pc_indices, 2, 1);
+								OLED_UpdateScreen();
+						}
+						
 						if (!is_stop)
 								Heater_on(setpoint, temperature_c);
 						
 						tim3_2sec_flag = 0;
 				}
 				
-				switch (cur_action)
-				{
-						case SET_UP_TEMPERATURE:
-								is_stop = 1;
-								is_set_up_temperature = 1;
-								symbol_index = 0;
-								setpoint_array[symbol_index] = 13;
-								cur_action = STOP;
-								break;
-						case START:
-								if (is_stop)
-								{
-										setpoint = Convert_setpoint_to_float(setpoint_array);
-										Heater_restart();
-								}
-								is_stop = 0;
-								is_set_up_temperature = 0;
-								break;
-						case STOP:
-								is_stop = 1;
-								Set_pwm_duty(0);
-								break;
-						case CONNECT_TO_PC:
-						{
-								/*uint16_t buffer_size = 0;//Get_uart_buffer(buffer_uart);
-								if (buffer_size > 0)
-								{
-										Uart2_send_string(buffer_uart, buffer_size);
-										while(transmission_in_progress) {}
-										OLED_ClearBuffer();
-										OLED_PrintScaledSymbols(10, 0, font_table, sent_indices, 8, 2);
-										OLED_UpdateScreen();
-										Delay_us(1000000);
-								}
-								cur_action = previous_action;*/
-								break;
-						}
-
-				}
-//				previous_action = cur_action;
-		}
+				if (cur_action != CONNECT_TO_PC)
+						Set_action(cur_action);
+				else
+						Manage_from_pc(cur_action);
 	
+		}
 }

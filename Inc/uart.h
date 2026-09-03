@@ -3,10 +3,11 @@
 
 #include "stm32f10x.h"
 
-extern volatile uint8_t transmission_in_progress;
+#define UART_BUFFER_SIZE 32
+extern uint8_t uart_rx_buffer[UART_BUFFER_SIZE];
 
 void Uart2_init(void);
-void Uart2_send_string(const char *str, uint16_t size);
-void Uart2_send_string_simple(char *str);
+void Uart2_receive_string(void);
+void Uart2_send(char *str);
 
 #endif
