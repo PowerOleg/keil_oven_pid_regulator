@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "common.h"
 #include "hw_config.h"
@@ -52,7 +53,7 @@ void Set_up_setpoint(const uint8_t key)
 		setpoint_array[symbol_index] = 13;
 }
 
-void Set_action(const uint8_t action)
+void Manage_from_mk(const uint8_t action)
 {
 		switch (cur_action)
 		{
@@ -67,7 +68,7 @@ void Set_action(const uint8_t action)
 						if (is_stop)
 						{
 								setpoint = Convert_setpoint_to_float(setpoint_array);
-								if (setpoint < 999.0f)
+								if (setpoint > 0 && setpoint < 1000.0f)
 								{
 										is_stop = 0;
 										is_set_up_temperature = 0;
@@ -86,9 +87,28 @@ void Set_action(const uint8_t action)
 void Manage_from_pc(const uint8_t action)
 {
 		if (!is_pc_connected)
-				Uart2_send("1");
+//				Uart2_send("1");
 		is_pc_connected = 1;
 		Uart2_receive_string();
+		if (receive_flag)
+		{
+				if (uart_rx_buffer[0] == 0 || uart_rx_buffer[0] == 0x2D)
+				{
+						is_stop = 1;
+						Set_pwm_duty(0);
+				}
+				else
+				{
+						setpoint = strtof((char *)uart_rx_buffer, NULL);
+						if (setpoint > 0 && setpoint < 1000.0f)
+						{
+								is_stop = 0;
+								is_set_up_temperature = 0;
+								Heater_restart();
+						}
+				}
+				receive_flag = 0;
+		}
 }
 
 int main(void)
@@ -169,7 +189,7 @@ int main(void)
 				}
 				
 				if (cur_action != CONNECT_TO_PC)
-						Set_action(cur_action);
+						Manage_from_mk(cur_action);
 				else
 						Manage_from_pc(cur_action);
 	

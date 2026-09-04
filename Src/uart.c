@@ -41,12 +41,13 @@ void Uart2_receive_string(void)
 				uint16_t messageLength = buffer_index;
         buffer_index = 0; // Очищаем индекс для нового приема
         uart_rx_buffer[messageLength] = '\0'; // Завершаем строку
-        for(int i = 0; i < strlen((char*)uart_rx_buffer); i++)
+        /*for(int i = 0; i < strlen((char*)uart_rx_buffer); i++)
         {
 						while(USART_GetFlagStatus(USART2, USART_FLAG_TXE) == RESET) {}
             USART_SendData(USART2, uart_rx_buffer[i]);
         }
-        while(USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);
+        while(USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);*/
+				receive_flag = 1;
     }
 }
 
