@@ -84,11 +84,16 @@ void Manage_from_mk(const uint8_t action)
 		is_pc_connected = 0;
 }
 
-void Manage_from_pc(const uint8_t action)
+void Manage_from_pc(const float temperature_c)
 {
-		if (!is_pc_connected)
-//				Uart2_send("1");
 		is_pc_connected = 1;
+		if (tim3_2sec_flag)
+		{
+				static char send_buf[UART_BUFFER_SIZE];
+				snprintf(send_buf, sizeof(send_buf), "%.1f", temperature_c);
+				Uart2_send(send_buf);
+		}
+
 		Uart2_receive_string();
 		if (receive_flag)
 		{
@@ -144,6 +149,7 @@ int main(void)
 		Delay_us(500000);
 		Led_toggle(&led_c13);
 		Led_toggle(&led_a8);
+		float temperature_c = 0.0f;
 		
 		while(1)
 		{
@@ -155,10 +161,15 @@ int main(void)
 				if (is_set_up_temperature)
 						Set_up_setpoint(cur_action);
 			
+				if (cur_action != CONNECT_TO_PC)
+						Manage_from_mk(cur_action);
+				else
+						Manage_from_pc(temperature_c);
+				
 				if (tim3_2sec_flag)
 				{
 						Led_toggle(&led_c13);
-						float temperature_c = Max6675_get_temperature_c();
+						temperature_c = Max6675_get_temperature_c();
 						if (temperature_c != temperature_c_previous)
 						{
 								Heater_average_filter(&temperature_c);
@@ -188,10 +199,5 @@ int main(void)
 						tim3_2sec_flag = 0;
 				}
 				
-				if (cur_action != CONNECT_TO_PC)
-						Manage_from_mk(cur_action);
-				else
-						Manage_from_pc(cur_action);
-	
 		}
 }
